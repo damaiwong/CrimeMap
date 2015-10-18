@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mapa trestných činov | AI-MAPS </title>
+	<meta name="description" content="Mapa zobrazujúca počet trestných činov a ich percentuálne vyriešenie v jednotlivých policajných okrskoch za obdobia 2013-2015.">
+	<meta property="og:image" content="http://demo.ai-maps.com/mapa-trestnych-cinov/thumbnail.png" />
+    <link rel="image_src" href="http://demo.ai-maps.com/mapa-trestnych-cinov/thumbnail.png" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <link rel="shortcut icon" href="favicon.ico" />
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
+	<link rel="stylesheet" href="jquery-ui-slider-pips.css" />
+	<link rel="stylesheet" href="style.css" />      
+  </head>
+ 
+<body>
+    <div id="map"></div>
+	<div class="banner">
+		<img src="banner.svg" height="120px"></img>
+	</div>  
+	<button id="play">Play</button>
+	<div id="slider"></div>	
+	<div id="legend" style="display:none"></div>
+	<div id="tool-tip"></div>	
+	<div class='cartodb-legend choropleth'>
+		<div class="legend-title" style="color:#284a59">Trestných činov / 10 000 obyv.</div>
+		<ul>
+			<li class="graph leg" style="border-radius: 0; border:none">
+				<div class="colors">
+				<div class="quartile" style="background-color:#FAE589"></div>
+					<div class="quartile" style="background-color:#FACF89"></div>
+					<div class="quartile" style="background-color:#FF9C5B"></div>
+					<div class="quartile" style="background-color:#F5634A"></div>
+					<div class="quartile" style="background-color:#ED303C"></div>
+					<div class="quartile" style="background-color:#B82730"></div>
+				</div>
+			</li>
+			<p style="padding-top:5px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;21.5&nbsp;&nbsp;
+			28.4&nbsp;&nbsp;&nbsp;35.2
+			&nbsp;42.0&nbsp;&nbsp;&nbsp;49.0</p>
+        </ul>
+	</div>  
+
+	<div class="logo">
+		<a href="http://ai-maps.com" target="blank">
+			<img src="aimaps.png"></img>
+		</a> 
+	</div>    
+	
+	<div class="links">
+	<a href="http://www.facebook.com/sharer.php?u=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank"><i class="fa fa-facebook"></i></a>
+	<a href="https://www.linkedin.com/cws/share?url=http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov%2F&original_referer=https%3A%2F%2Fdeveloper.linkedin.com%2Fetc%2Fdesigns%2Flinkedin%2Fkaty%2Fglobal%2Fclientlibs%2Fhtml%2Fsandbox.html%3Falign-class%3Dmiddle-center&token=&isFramed=true&lang=en_US&_ts=1445164977522.2314"><i class="fa fa-linkedin" target="blank"></i></a>
+	<a href="http://www.twitter.com/?status=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank"><i class="fa fa-twitter"></i></a>
+	<a href="" target="blank"><i class="fa fa-github"></i></a>
+	</div>
+    
+    <!-- include cartodb.js library -->
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script src="jquery-ui-slider-pips.js"></script>
+	
+
+    <script>
+      function main() {
+        var map = new L.Map('map', {
+          zoomControl: false,
+          center: [48.5, 20],
+          zoom: 8
+        });  		
+		
+		var sizes = ["table_2013_1","table_2013_2","table_2013_3","table_2013_4","table_2014_1","table_2014_2","table_2014_3","table_2014_4","table_2015_1","table_2015_2"];
+		var pips = ["I. štvrťrok 2013","II. štvrťrok 2013","III. štvrťrok 2013","IV. štvrťrok 2013","I. štvrťrok 2014","II. štvrťrok 2014","III. štvrťrok 2014","IV. štvrťrok 2014","I. štvrťrok 2015","II. štvrťrok 2015"];
+		var start = "table_2013_1";
+		var currentSlide = 0;
+		var playInterval;
+		var casti;
+		var slideDuration = 1500; // in milliseconds
+		var autoRewind = true;
+		
+		function changeLegend(start, end) {
+          $('#legend').html("Obdobie " + start ) 
+		} 	
+		function addTimeSlider(sublayer) { 
+         var sql = cartodb.SQL({ user: 'aimaps' })		 
+         // fetch time range
+         sql.execute('select datum from ' + start + ' WHERE cartodb_id=1' , function(data) {
+           var range = data.rows[0];
+		   var obdobie;		
+           var max = 4
+           var min = 1
+           // update slider with range
+           $("#slider").slider({
+              range: false,
+              min: 0,
+              max: sizes.length - 1,
+			  step: 1,              
+              slide: function(event, ui) {				  	
+			  },
+              stop: function( event, ui ) {
+			  // when user selects the dates, update the layer with the range  
+				start = sizes[ui.value];				
+				sql.execute('select datum from ' + start + ' WHERE cartodb_id=1' , function(data) {							
+				changeLegend(data.rows[0].datum);  
+				sublayer.setSQL("select * from " + start); 				
+				});  		
+              }
+            }).slider("pips", {
+					rest: "label",
+					labels: pips
+				});			
+             changeLegend("31.3.2013");    
+        });
+		 
+		$( "#play" ).button({
+		  icons: {
+			primary: "ui-icon-play"
+		  },
+		  text: false
+		}).click(function () {
+			if (playInterval != undefined) {
+				clearInterval(playInterval);
+				playInterval = undefined;
+				$(this).button({
+					icons: {
+						primary: "ui-icon-play"
+					}
+				});
+				return;
+			}
+			$(this).button({
+				icons: {
+					primary: "ui-icon-pause"
+				}
+			});
+			playInterval = setInterval(function () {
+				currentSlide++;
+				if (currentSlide > sizes.length) {
+					if (autoRewind) {
+						currentSlide = 0;
+					}
+					else {
+						clearIntveral(playInterval);
+						return;
+					}
+				}
+				setSlide(currentSlide);
+			}, slideDuration);
+		});
+		}
+	  
+	  function setSlide (index) {
+	    var sql = cartodb.SQL({ user: 'aimaps' })
+		currentSlide = index;		
+		$( "#slider" ).slider( "value", index );
+		start = sizes[index];				
+		sql.execute('select datum from ' + start + ' WHERE cartodb_id=1' , function(data) {							
+			changeLegend(data.rows[0].datum);    
+			casti.setSQL("select * from " + start); 				
+		}); 
+	  }
+        
+	  var polygons = {};
+
+        function geometryHover(username, map, layer, options) {
+
+          options = options || {}
+          var HIGHLIGHT_STYLE = {
+            weight: 3,
+            color: '#FFFFFF',
+            opacity: 1,
+            fillColor: '#FFFFFF',
+            fillOpacity: 0.3
+          };
+          style = options.style || HIGHLIGHT_STYLE;
+          var polygonsHighlighted = [];
+
+
+          // fetch the geometry
+          var sql = new cartodb.SQL({ user: username, format: 'geojson' });
+          sql.execute("select cartodb_id, the_geom from (" + layer.getSQL() + ") as _wrap").done(function(geojson) {
+            var features = geojson.features;
+			
+            for(var i = 0; i < features.length; ++i) {
+              var f = geojson.features[i];
+              var key = f.properties.cartodb_id
+			 
+              // generate geometry
+              var geo = L.GeoJSON.geometryToLayer(features[i].geometry);
+              geo.setStyle(style);
+			  geo._options = f.properties.tc;
+			  //console.log(geo)
+			  //geo.addTo(map)
+
+              // add to polygons
+              polygons[key] = polygons[key] ||  [];
+              polygons[key].push(geo);
+			  
+            }
+			  
+			//geo.addTo(map)
+          });
+
+          function featureOver(e, pos, latlng, data) {
+		  //console.log('over')
+            featureOut();
+            var pol = polygons[data.cartodb_id] || [];
+            for(var i = 0; i < pol.length; ++i) {
+              map.addLayer(pol[i]);
+			 
+			
+              polygonsHighlighted.push(pol[i]);
+            }
+          }
+
+          function featureOut() {
+		  //console.log('out')
+            var pol = polygonsHighlighted;
+            for(var i = 0; i < pol.length; ++i) {
+              map.removeLayer(pol[i]);
+            }
+            polygonsHighlighted = [];
+          }
+
+          layer.on('featureOver', featureOver);
+          layer.on('featureOut', featureOut);
+          layer.setInteraction(true);
+ 
+        } 
+
+		cartodb.createLayer(map, {
+          user_name: 'aimaps',
+          type: 'cartodb',
+          sublayers: [{
+             sql: 'select * from table_2013_1',
+             cartocss: '#layer{ polygon-fill: #FFFFB2 ; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1;}#layer [ tc_obyv >= 48.9] {  polygon-fill: #B10026 ;}#layer [ tc_obyv <= 48.9] {  polygon-fill: #E31A1C ;}#layer [ tc_obyv <= 42.5] {  polygon-fill: #FC4E2A ;}#layer [ tc_obyv <= 32.5] {  polygon-fill: #FD8D3C ;}#layer [ tc_obyv <= 28.35] {  polygon-fill: #FEB24C ;}#layer [ tc_obyv <= 21.5] {  polygon-fill: #FED976 ;} #layer [ tc_obyv <= 22.45] {  polygon-fill: #FFFFB2 ;}    ',
+             interactivity: 'cartodb_id, tc_obyv, nm3, obyv, tc, obj'
+          }]
+        })
+         .addTo(map)
+         .on('done', function(layer) {
+           geometryHover('aimaps', map, layer.getSubLayer(0));
+		   addTimeSlider(layer.getSubLayer(0));
+		   casti = layer.getSubLayer(0);
+          casti.setInteraction(true);
+		  var event = function(e){
+              $('#tool-tip').css({
+                 left:  e.pageX,
+                 top:   e.pageY
+              });
+          }; 
+          casti.on('featureOver', function(e, pos, pixel, data) {
+		  
+		   $('#tool-tip').html('<p class="title"> Policajný okrsok:</p>'+'<p class="value">'  + data.nm3 + '</p>'+'<p class="title"> Počet obyvateľov:</p>'+'<p class="value"> '  + data.obyv + '</p>'+'<p class="title"> Trestných činov: </p>'+'<p class="value">'  + data.tc + '</p>'+'<p class="title"> Trestných činov na 10000 osôb: </p>'+'<p class="value">'  + data.tc_obyv + '</p>'+'<p class="value"><img src="http://chart.googleapis.com/chart?cht=pc&chs=310x125&chd=t:0,0,0|'+data.obj+','+(100 - data.obj)+'&chxt=x,y&chxs=0,00000088,12,0,lt|1,00000088,12,1,lt&chds=0,0,0,100&chl=0|0|0|'+data.obj+'%|'+(100 - data.obj)+'%&chdl=Vyriešené|Nevyriešené&chxr=0,0,0,100&chf=bg,s,00000000&chco=FAE589|B82730|000000|000000|000000,FAE589|B82730"</img></p>');
+            $(document).bind('mousemove', event);
+            $('#tool-tip').show();			
+		      
+			 
+           
+          });
+		  
+		  casti.on('featureOut', function(e,pos,latlng,data){
+           //Make the tooltip go away when off cities
+            $('#tool-tip').hide();
+            $(document).unbind('mousemove', event, false);
+          });
+        }).on('error', function() {
+          cartodb.log.log("some error occurred");
+        });
+		  
+      }
+
+      // you could use $(window).load(main);
+      window.onload = main;
+    </script>
+  </body>
+</html>
