@@ -3,7 +3,7 @@
   <head>
     <title>Mapa trestných činov | AI-MAPS </title>
 	<meta name="description" content="Mapa zobrazujúca počet trestných činov a ich percentuálne vyriešenie v jednotlivých policajných okrskoch za obdobia 2013-2015.">
-	<meta property="og:image" content="http://demo.ai-maps.com/mapa-trestnych-cinov/thumbnail.png" />
+	<meta property="og:image" content="http://demo.ai-maps.com/mapa-trestnych-cinov/css/thumbnail.png" />
     <link rel="image_src" href="http://demo.ai-maps.com/mapa-trestnych-cinov/thumbnail.png" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
@@ -11,25 +11,25 @@
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 	<link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.css" />
-	<link rel="stylesheet" href="jquery-ui-slider-pips.css" />
-	<link rel="stylesheet" href="style.css" />      
+	<link rel="stylesheet" href="css/jquery-ui-slider-pips.css" />
+	<link rel="stylesheet" href="css/style.css" />      
   </head>
  
 <body>
     <div id="map"></div>
 	<div class="banner">
-		<img src="banner.svg" height="120px"></img>
+		<img src="css/banner.svg" height="120px"></img>
 	</div>  
 	<button id="play">Play</button>
 	<div id="slider"></div>	
 	<div id="legend" style="display:none"></div>
 	<div id="tool-tip"></div>	
-	<div class='cartodb-legend choropleth'>
+	<div class='cartodb-legend choropleth' style="height: 65px;">
 		<div class="legend-title" style="color:#284a59">Trestných činov / 10 000 obyv.</div>
 		<ul>
 			<li class="graph leg" style="border-radius: 0; border:none">
 				<div class="colors">
-				<div class="quartile" style="background-color:#FAE589"></div>
+				    <div class="quartile" style="background-color:#FAE589"></div>
 					<div class="quartile" style="background-color:#FACF89"></div>
 					<div class="quartile" style="background-color:#FF9C5B"></div>
 					<div class="quartile" style="background-color:#F5634A"></div>
@@ -37,35 +37,39 @@
 					<div class="quartile" style="background-color:#B82730"></div>
 				</div>
 			</li>
-			<p style="padding-top:5px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;21.5&nbsp;&nbsp;
+			<div style="padding-top:5px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;21.5&nbsp;&nbsp;
 			28.4&nbsp;&nbsp;&nbsp;35.2
-			&nbsp;42.0&nbsp;&nbsp;&nbsp;49.0</p>
+			&nbsp;42.0&nbsp;&nbsp;&nbsp;49.0</div>
         </ul>
 	</div>  
+	
+
 
 	<div class="logo">
 		<a href="http://ai-maps.com" target="blank">
-			<img src="aimaps.png"></img>
+			<img src="css/aimaps.png"></img>
 		</a> 
 	</div>    
 	
+	
+	
 	<div class="links">
-	<a href="http://www.facebook.com/sharer.php?u=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank"><i class="fa fa-facebook"></i></a>
-	<a href="https://www.linkedin.com/cws/share?url=http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov%2F&original_referer=https%3A%2F%2Fdeveloper.linkedin.com%2Fetc%2Fdesigns%2Flinkedin%2Fkaty%2Fglobal%2Fclientlibs%2Fhtml%2Fsandbox.html%3Falign-class%3Dmiddle-center&token=&isFramed=true&lang=en_US&_ts=1445164977522.2314"><i class="fa fa-linkedin" target="blank"></i></a>
-	<a href="http://www.twitter.com/?status=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank"><i class="fa fa-twitter"></i></a>
-	<a href="" target="blank"><i class="fa fa-github"></i></a>
-	</div>
+	<a href="http://www.facebook.com/sharer.php?u=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank" title="Share on Facebook"><i class="fa fa-facebook"></i></a>
+	<a href="https://www.linkedin.com/cws/share?url=http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov%2F&original_referer=https%3A%2F%2Fdeveloper.linkedin.com%2Fetc%2Fdesigns%2Flinkedin%2Fkaty%2Fglobal%2Fclientlibs%2Fhtml%2Fsandbox.html%3Falign-class%3Dmiddle-center&token=&isFramed=true&lang=en_US&_ts=1445164977522.2314" target="blank"><i class="fa fa-linkedin" title="Share on Linkedin" ></i></a>
+	<a href="http://www.twitter.com/?status=Mapa+Trestných+Činov+SR+|+AIMAPS+-+http%3A%2F%2Fdemo.ai-maps.com%2Fmapa-trestnych-cinov" target="blank" title="Share on Twitter"><i class="fa fa-twitter"></i></a>
+	<a href="https://github.com/michaelhornak/CrimeMap.git" target="blank" title="Show on GitHub"><i class="fa fa-github"></i></a>
+	</div>  
     
     <!-- include cartodb.js library -->
     <script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-	<script src="jquery-ui-slider-pips.js"></script>
+	<script src="js/jquery-ui-slider-pips.js"></script>
 	
 
     <script>
       function main() {
         var map = new L.Map('map', {
-          zoomControl: false,
+          zoomControl: true,
           center: [48.5, 20],
           zoom: 8
         });  		
@@ -76,7 +80,7 @@
 		var currentSlide = 0;
 		var playInterval;
 		var casti;
-		var slideDuration = 1500; // in milliseconds
+		var slideDuration = 3000; // in milliseconds
 		var autoRewind = true;
 		
 		function changeLegend(start, end) {
@@ -234,7 +238,7 @@
           type: 'cartodb',
           sublayers: [{
              sql: 'select * from table_2013_1',
-             cartocss: '#layer{ polygon-fill: #FFFFB2 ; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1;}#layer [ tc_obyv >= 48.9] {  polygon-fill: #B10026 ;}#layer [ tc_obyv <= 48.9] {  polygon-fill: #E31A1C ;}#layer [ tc_obyv <= 42.5] {  polygon-fill: #FC4E2A ;}#layer [ tc_obyv <= 32.5] {  polygon-fill: #FD8D3C ;}#layer [ tc_obyv <= 28.35] {  polygon-fill: #FEB24C ;}#layer [ tc_obyv <= 21.5] {  polygon-fill: #FED976 ;} #layer [ tc_obyv <= 22.45] {  polygon-fill: #FFFFB2 ;}    ',
+             cartocss: '	#layer{ polygon-fill: #FFFFB2 ; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1;}#layer [ tc_obyv >= 48.9] {  polygon-fill: #B82730 ;}#layer [ tc_obyv <= 48.9] {  polygon-fill: #ED303C ;}#layer [ tc_obyv <= 42.5] {  polygon-fill: #F5634A ;}#layer [ tc_obyv <= 32.5] {  polygon-fill: #FF9C5B ;}#layer [ tc_obyv <= 28.35] {  polygon-fill: #FACF89 ;}#layer [ tc_obyv <= 21.5] {  polygon-fill: #FAE589 ;} ',
              interactivity: 'cartodb_id, tc_obyv, nm3, obyv, tc, obj'
           }]
         })
@@ -252,7 +256,7 @@
           }; 
           casti.on('featureOver', function(e, pos, pixel, data) {
 		  
-		   $('#tool-tip').html('<p class="title"> Policajný okrsok:</p>'+'<p class="value">'  + data.nm3 + '</p>'+'<p class="title"> Počet obyvateľov:</p>'+'<p class="value"> '  + data.obyv + '</p>'+'<p class="title"> Trestných činov: </p>'+'<p class="value">'  + data.tc + '</p>'+'<p class="title"> Trestných činov na 10000 osôb: </p>'+'<p class="value">'  + data.tc_obyv + '</p>'+'<p class="value"><img src="http://chart.googleapis.com/chart?cht=pc&chs=310x125&chd=t:0,0,0|'+data.obj+','+(100 - data.obj)+'&chxt=x,y&chxs=0,00000088,12,0,lt|1,00000088,12,1,lt&chds=0,0,0,100&chl=0|0|0|'+data.obj+'%|'+(100 - data.obj)+'%&chdl=Vyriešené|Nevyriešené&chxr=0,0,0,100&chf=bg,s,00000000&chco=FAE589|B82730|000000|000000|000000,FAE589|B82730"</img></p>');
+		   $('#tool-tip').html('<p class="title"> Policajný okrsok:</p>'+'<p class="value">'  + data.nm3 + '</p>'+'<p class="title"> Počet obyvateľov:</p>'+'<p class="value"> '  + data.obyv + '</p>'+'<p class="title"> Trestných činov: </p>'+'<p class="value">'  + data.tc + '</p>'+'<p class="title"> Trestných činov na 10 000 osôb: </p>'+'<p class="value">'  + data.tc_obyv + '</p>'+'<p class="value chart"><img src="http://chart.googleapis.com/chart?cht=pc&chs=310x125&chd=t:0,0,0|'+data.obj+','+(100 - data.obj)+'&chxt=x,y&chxs=0,00000088,12,0,lt|1,00000088,12,1,lt&chds=0,0,0,100&chl=0|0|0|'+data.obj+'%|'+(100 - data.obj)+'%&chdl=Vyriešené|Nevyriešené&chxr=0,0,0,100&chf=bg,s,00000000&chco=FAE589|B82730|000000|000000|000000,FAE589|B82730"</img></p>');
             $(document).bind('mousemove', event);
             $('#tool-tip').show();			
 		      

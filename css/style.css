@@ -17,7 +17,10 @@
     right: 40px;
     left: 55px;
     border-radius: 0px;
+	    cursor: pointer;
 }
+  
+button:focus {outline:0;}
 
 .ui-slider-handle{
     
@@ -44,7 +47,7 @@
       }
 	  #tool-tip {
   position: absolute;
-  width: auto;
+  width: 550px;
   height: auto;
   background-color: white;
   opacity: .9;
@@ -117,7 +120,7 @@ margin-left:7px;
 
 .banner{    z-index: 999999;
     position: absolute;
-    left: 30px;
+    left: 50px;
     top: 30px;
     background-color: rgba(255, 255, 255, 0.8);}
 	
@@ -141,3 +144,8 @@ margin-left:7px;
     padding: 10px;
     color: #888888;
 }
+
+.chart{
+    position: absolute;
+    right: 30px;
+    top: 14%;}
