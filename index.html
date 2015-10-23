@@ -1,10 +1,10 @@
 ﻿<!DOCTYPE html>
 <html>
   <head>
-    <title>Mapa trestných činov | AI-MAPS </title>
+    <title>Trestné činy SR | AI-MAPS </title>
 	<meta name="description" content="Mapa zobrazujúca počet trestných činov a ich percentuálne vyriešenie v jednotlivých policajných okrskoch za obdobia 2013-2015.">
 	<meta property="og:image" content="http://demo.ai-maps.com/mapa-trestnych-cinov/css/thumbnail.png" />
-    <link rel="image_src" href="http://demo.ai-maps.com/mapa-trestnych-cinov/thumbnail.png" />
+    <link rel="image_src" href="http://demo.ai-maps.com/mapa-trestnych-cinov/css/thumbnail.png" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <link rel="shortcut icon" href="favicon.ico" />
@@ -85,7 +85,7 @@
 			</li>
 			<div style="padding-top:5px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;21.5&nbsp;&nbsp;
 			28.4&nbsp;&nbsp;&nbsp;35.2
-			&nbsp;42.0&nbsp;&nbsp;&nbsp;49.0</div>
+			&nbsp;&nbsp;&nbsp;42.0&nbsp;&nbsp;&nbsp;49.0</div>
         </ul>
 	</div>  
 	
@@ -116,13 +116,18 @@
 	
 
     <script>
+	
       function main() {
         var map = new L.Map('map', {
           zoomControl: true,
           center: [48.5, 20],
           zoom: 8
-        });  		
+        });  	
 		
+		L.control.scale({position:'bottomright',imperial:false}).addTo(map);
+		
+		if ($( window ).width() < 768) { map.setZoom(6)}
+				
 		var sizes = ["table_2013_1","table_2013_2","table_2013_3","table_2013_4","table_2014_1","table_2014_2","table_2014_3","table_2014_4","table_2015_1","table_2015_2"];
 		var pips = ["I. štvrťrok 2013","II. štvrťrok 2013","III. štvrťrok 2013","IV. štvrťrok 2013","I. štvrťrok 2014","II. štvrťrok 2014","III. štvrťrok 2014","IV. štvrťrok 2014","I. štvrťrok 2015","II. štvrťrok 2015"];
 		var start = "table_2013_1";
@@ -131,6 +136,10 @@
 		var casti;
 		var slideDuration = 3000; // in milliseconds
 		var autoRewind = true;
+		
+		function formatNumber (num) {
+			return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1 ")
+		}
 		
 		function changeLegend(start, end) {
           $('#legend').html("Obdobie " + start ) 
@@ -289,7 +298,7 @@
           type: 'cartodb',
           sublayers: [{
              sql: 'select * from table_2013_1',
-             cartocss: '	#layer{ polygon-fill: #FFFFB2 ; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1;}#layer [ tc_obyv >= 48.9] {  polygon-fill: #B82730 ;}#layer [ tc_obyv <= 48.9] {  polygon-fill: #ED303C ;}#layer [ tc_obyv <= 42.5] {  polygon-fill: #F5634A ;}#layer [ tc_obyv <= 32.5] {  polygon-fill: #FF9C5B ;}#layer [ tc_obyv <= 28.35] {  polygon-fill: #FACF89 ;}#layer [ tc_obyv <= 21.5] {  polygon-fill: #FAE589 ;} ',
+             cartocss: '	#layer{ polygon-fill: #FFFFB2 ; polygon-opacity: 0.8; line-color: #FFF; line-width: 1; line-opacity: 1;  text-face-name: "DejaVu Sans Book"; text-fill:#FFFFFF; text-size:12; text-opacity: 1; text-transform:uppercase;text-line-spacing:1; text-wrap-width:20; text-allow-overlap:true; text-name:[nm];}#layer [ tc_obyv >= 48.9] {  polygon-fill: #B82730 ;}#layer [ tc_obyv <= 48.9] {  polygon-fill: #ED303C ;}#layer [ tc_obyv <= 42.5] {  polygon-fill: #F5634A ;}#layer [ tc_obyv <= 32.5] {  polygon-fill: #FF9C5B ;}#layer [ tc_obyv <= 28.35] {  polygon-fill: #FACF89 ;}#layer [ tc_obyv <= 21.5] {  polygon-fill: #FAE589 ;} ',
              interactivity: 'cartodb_id, tc_obyv, nm3, obyv, tc, obj'
           }]
         })
@@ -301,13 +310,13 @@
           casti.setInteraction(true);
 		  var event = function(e){
               $('#tool-tip').css({
-                 left:  e.pageX,
+                 left:  e.pageX + 10,
                  top:   e.pageY
               });
           }; 
           casti.on('featureOver', function(e, pos, pixel, data) {
 		  
-		   $('#tool-tip').html('<p class="title"> Policajný okrsok:</p>'+'<p class="value">'  + data.nm3 + '</p>'+'<p class="title"> Počet obyvateľov:</p>'+'<p class="value"> '  + data.obyv + '</p>'+'<p class="title"> Trestných činov: </p>'+'<p class="value">'  + data.tc + '</p>'+'<p class="title"> Trestných činov na 10 000 obyv.: </p>'+'<p class="value">'  + data.tc_obyv + '</p>'+'<p class="value chart"><img src="http://chart.googleapis.com/chart?cht=pc&chs=320x125&chd=t:0,0,0|'+data.obj+','+(100 - data.obj)+'&chxt=x,y&chxs=0,00000088,12,0,lt|1,00000088,12,1,lt&chds=0,0,0,100&chl=0|0|0|'+data.obj+'%|'+(100 - data.obj)+'%&chdl=Objasnených|Neobjasnených&chxr=0,0,0,100&chf=bg,s,00000000&chco=FAE589|B82730|000000|000000|000000,FAE589|B82730"</img></p>');
+		   $('#tool-tip').html('<p class="title"> Policajný okrsok:</p>'+'<p class="value">'  + data.nm3 + '</p>'+'<p class="title"> Počet obyvateľov:</p>'+'<p class="value"> '  + formatNumber(data.obyv) + '</p>'+'<p class="title"> Trestných činov: </p>'+'<p class="value">'  + data.tc + '</p>'+'<p class="title"> Trestných činov na 10 000 obyv.: </p>'+'<p class="value">'  + data.tc_obyv + '</p>'+'<p class="value chart"><img src="http://chart.googleapis.com/chart?cht=pc&chs=320x125&chd=t:0,0,0|'+data.obj+','+(100 - data.obj)+'&chxt=x,y&chxs=0,00000088,12,0,lt|1,00000088,12,1,lt&chds=0,0,0,100&chl=0|0|0|'+Math.round(data.obj)+'%|'+(100 - Math.round(data.obj))+'%&chdl=Objasnených|Neobjasnených&chxr=0,0,0,100&chf=bg,s,00000000&chco=FAE589|B82730|000000|000000|000000,FAE589|B82730"</img></p>');
             $(document).bind('mousemove', event);
             $('#tool-tip').show();			
 		      
